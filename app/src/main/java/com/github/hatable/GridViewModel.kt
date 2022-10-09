@@ -52,7 +52,8 @@ class GridViewModel @Inject constructor() : ViewModel() {
         ),
         GridProps(
             "Tue & Thu <br><b>02.00 - 04.00</b>"
-        ), GridProps(
+        ),
+        GridProps(
             "Tue & Thu <br><b>02.00 - 04.00</b>"
         ),
         GridProps(
@@ -104,11 +105,12 @@ class GridViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun changeItemState(item: GridProps) {
-        val position = list.indexOfFirst { element ->
-            element.item == item.item
-        }
-        list[position] = list[position].copy(
-            isSelectedGridItem = !item.isSelectedGridItem
+        _uiState.value = _uiState.value.copy(
+            items = list.toMutableStateList().also {
+                it.find {
+                    it.id == item.id
+                }?.isSelectedGridItem = !item.isSelectedGridItem
+            }
         )
     }
 
