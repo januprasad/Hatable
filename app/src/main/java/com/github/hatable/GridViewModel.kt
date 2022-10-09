@@ -10,65 +10,10 @@ import javax.inject.Inject
 @HiltViewModel
 class GridViewModel @Inject constructor() : ViewModel() {
 
-//    private var _uiState = mutableStateListOf<GridProps>()
+    //    private var _uiState = mutableStateListOf<GridProps>()
 //    val itemsState: List<GridProps> = _uiState
-
-    val limit = 6
     private var _uiState = mutableStateOf(UI())
     val itemsState: MutableState<UI> = _uiState
-    val data: List<GridProps> = mutableListOf(
-        GridProps(
-            "Mon, Tue & Thu <br><b>09.00 - 10.00</b>"
-        ),
-        GridProps(
-            "Mon, Wed & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Fri, Tue & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Tue & Thu <br><b>02.00 - 04.00</b>"
-        ),
-        GridProps(
-            "Mon, Tue & Thu <br><b>09.00 - 10.00</b>"
-        ),
-        GridProps(
-            "Mon, Wed & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Fri, Tue & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Tue & Thu <br><b>02.00 - 04.00</b>"
-        ),
-        GridProps(
-            "Mon, Tue & Thu <br><b>09.00 - 10.00</b>"
-        ),
-        GridProps(
-            "Mon, Wed & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Fri, Tue & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Tue & Thu <br><b>02.00 - 04.00</b>"
-        ),
-        GridProps(
-            "Tue & Thu <br><b>02.00 - 04.00</b>"
-        ),
-        GridProps(
-            "Mon, Tue & Thu <br><b>09.00 - 10.00</b>"
-        ),
-        GridProps(
-            "Mon, Wed & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Fri, Tue & Thu <br><b>11.00 - 12.00</b>"
-        ),
-        GridProps(
-            "Tue & Thu <br><b>02.00 - 04.00</b>"
-        )
-    )
 
     init {
         buildGridItems()
@@ -76,10 +21,16 @@ class GridViewModel @Inject constructor() : ViewModel() {
 
     private fun buildGridItems() {
         _uiState.value.items += data
-        if (_uiState.value.items.size > limit) {
-            _uiState.value.items.takeLast(data.size - limit).map {
+        when {
+            _uiState.value.items.size > limit -> _uiState.value.items.changeVisibilityUIListData {
                 it.isVisible = false
             }
+        }
+    }
+
+    private fun changeVisibilityUIListData(value: Boolean = false) {
+        _uiState.value.items.takeLast(data.size - limit).map {
+            it.isVisible = value
         }
     }
 
@@ -107,8 +58,8 @@ class GridViewModel @Inject constructor() : ViewModel() {
     private fun changeItemState(item: GridProps) {
         _uiState.value = _uiState.value.copy(
             items = list.toMutableStateList().also {
-                it.find {
-                    it.id == item.id
+                it.find { temp ->
+                    temp.id == item.id
                 }?.isSelectedGridItem = !item.isSelectedGridItem
             }
         )
@@ -117,8 +68,8 @@ class GridViewModel @Inject constructor() : ViewModel() {
     fun showHideItems() {
         _uiState.value = _uiState.value.copy(
             items = list.toMutableStateList().also {
-                it.takeLast(data.size - 6).map { item ->
-                    item.isVisible = !item.isVisible
+                it.changeVisibilityUIListData() {
+                    it.isVisible = !it.isVisible
                 }
             }
         )
