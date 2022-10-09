@@ -10,8 +10,6 @@ import javax.inject.Inject
 @HiltViewModel
 class GridViewModel @Inject constructor() : ViewModel() {
 
-    //    private var _uiState = mutableStateListOf<GridProps>()
-//    val itemsState: List<GridProps> = _uiState
     private var _uiState = mutableStateOf(UI())
     val itemsState: MutableState<UI> = _uiState
 
@@ -25,12 +23,6 @@ class GridViewModel @Inject constructor() : ViewModel() {
             _uiState.value.items.size > limit -> _uiState.value.items.changeVisibilityUIListData {
                 it.isVisible = false
             }
-        }
-    }
-
-    private fun changeVisibilityUIListData(value: Boolean = false) {
-        _uiState.value.items.takeLast(data.size - limit).map {
-            it.isVisible = value
         }
     }
 
@@ -68,8 +60,8 @@ class GridViewModel @Inject constructor() : ViewModel() {
     fun showHideItems() {
         _uiState.value = _uiState.value.copy(
             items = list.toMutableStateList().also {
-                it.changeVisibilityUIListData() {
-                    it.isVisible = !it.isVisible
+                it.changeVisibilityUIListData() { item ->
+                    item.isVisible = !item.isVisible
                 }
             }
         )

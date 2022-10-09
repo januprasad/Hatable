@@ -40,7 +40,6 @@ fun SnapshotStateList<GridProps>.changeVisibilityUIListData(
     operation: (GridProps) -> Unit
 ) {
     this.takeLast(data.size - limit).map {
-//        it.isVisible = value
         operation(it)
     }
 }
