@@ -23,6 +23,6 @@ fun createPreview() {
             "Wed & Thu <br>04.00 - 5.00"
         )
     )
-    GridView(items) {
+    GridView(items = items) {
     }
 }
