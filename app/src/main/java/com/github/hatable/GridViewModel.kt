@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+typealias UiState = MutableState<UI>
+
 @HiltViewModel
 class GridViewModel @Inject constructor() : ViewModel() {
 
     private var _uiState = mutableStateOf(UI())
-    val itemsState: MutableState<UI> = _uiState
+    val uiState: UiState = _uiState
 
     init {
         buildGridItems()

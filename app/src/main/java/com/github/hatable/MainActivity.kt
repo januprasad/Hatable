@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,54 +83,95 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainView() {
-    val gridViewModel = viewModel(modelClass = GridViewModel::class.java)
-    val itemState = gridViewModel.itemsState
-    val state = itemState.value
-    var enforceMore by remember {
-        mutableStateOf(true)
-    }
-    val limit = 6
-    val moreIconState = state.items.size > 6
-    val c = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(6.dp)
     ) {
-        GridView(modifier = Modifier.weight(1f), state.items) {
-            gridViewModel.onEvent(UIEvent.OnGridItemSelected(it))
+        val gridViewModel = viewModel(modelClass = GridViewModel::class.java)
+
+        val uiState by remember {
+            gridViewModel.uiState
         }
-        if (moreIconState) {
-            val buttonText = enforceMore then "More" ?: "Less"
-            Button(
-                onClick = {
-                    enforceMore = !enforceMore
-                    gridViewModel.onEvent(UIEvent.OnMoreIconPressed)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp)
-            ) {
-                Text(text = buttonText)
-            }
+
+        TopSection(Modifier.weight(1f), uiState.items) { item ->
+            gridViewModel.onEvent(UIEvent.OnGridItemSelected(item))
         }
-        Spacer(modifier = Modifier.height(2.dp))
-        Button(
-            onClick = { gridViewModel.onEvent(UIEvent.OnSubmitPressed) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-        ) {
-            Text(text = "Collect Selected")
+
+        MiddleSection(moreIconState= uiState.items.size > 6 , modifier = Modifier) {
+            gridViewModel.onEvent(UIEvent.OnMoreIconPressed)
+        }
+
+        EndSection() {
+            gridViewModel.onEvent(UIEvent.OnSubmitPressed)
         }
     }
 }
 
 @Composable
-fun GridView(
+fun TopSection(
     modifier: Modifier = Modifier,
+    items: SnapshotStateList<GridProps>,
+    OnGridIconPressed: (GridProps) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(6.dp)
+    ) {
+        GridView(items) {
+            OnGridIconPressed(it)
+        }
+    }
+}
+
+@Composable
+fun MiddleSection(
+    moreIconState: Boolean,
+    modifier: Modifier = Modifier,
+    OnMoreIconPressed: () -> Unit
+) {
+    var enforceMore by remember {
+        mutableStateOf(true)
+    }
+
+    val c = LocalContext.current
+    if (moreIconState) {
+        val buttonText = enforceMore then "More" ?: "Less"
+        Button(
+            onClick = {
+                enforceMore = !enforceMore
+                OnMoreIconPressed()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+        ) {
+            Text(text = buttonText)
+        }
+    }
+    Spacer(modifier = Modifier.height(2.dp))
+}
+
+@Composable
+fun EndSection(OnSubmitPressed: () -> Unit) {
+    val gridViewModel = viewModel(modelClass = GridViewModel::class.java)
+    Button(
+        onClick = {
+            OnSubmitPressed()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+    ) {
+        Text(text = "Collect Selected")
+    }
+}
+
+@Composable
+fun GridView(
     items: List<GridProps>,
+    modifier: Modifier = Modifier,
     onItemSelected: (GridProps) -> Unit
 ) {
     LazyVerticalGrid( // on below line we are setting the
