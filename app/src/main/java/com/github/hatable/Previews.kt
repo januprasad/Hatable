@@ -24,5 +24,6 @@ fun createPreview() {
         )
     )
     GridView(items = items) {
+
     }
 }
