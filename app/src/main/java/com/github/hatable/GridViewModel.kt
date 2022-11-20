@@ -17,6 +17,10 @@ class GridViewModel @Inject constructor() : ViewModel() {
     private var _uiState = mutableStateOf(UI())
     val uiState: UiState = _uiState
 
+    fun reinit() {
+        _uiState = mutableStateOf(UI())
+        buildGridItems()
+    }
     init {
         buildGridItems()
     }
@@ -35,6 +39,7 @@ class GridViewModel @Inject constructor() : ViewModel() {
      */
     fun onEvent(event: UIEvent) {
         when (event) {
+
             is UIEvent.OnGridItemSelected -> {
                 changeItemState(event.item)
             }
