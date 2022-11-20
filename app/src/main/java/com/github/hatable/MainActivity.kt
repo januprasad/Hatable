@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -97,7 +99,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun ButtonView() {
-    Row(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+    ) {
         var selectionId: TeacherType by remember {
             mutableStateOf(TeacherType.Nothing)
         }
@@ -163,7 +169,8 @@ fun TeacherTypeButton(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = currentCardColor,
         border = BorderStroke(width = 1.dp, color = currentBorderColor),
-        modifier = weight.aspectRatio(ratio = 16f / 5)
+        modifier = weight
+            .aspectRatio(ratio = 16f / 5)
             .padding(4.dp),
         onClick = {
             when (teacherType) {
@@ -223,91 +230,103 @@ private fun MainView() {
     val uiState by remember {
         gridViewModel.uiState
     }
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Box(
-            modifier = Modifier
-        ) {
-            val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-            Column(
-                modifier = Modifier
-                    .padding(start = 34.dp)
-                    .drawWithCache {
-                        onDrawWithContent {
-                            // draw behind the content the vertical line on the left
-                            drawLine(
-                                color = buttonColor,
-                                Offset.Zero,
-                                Offset(0f, this.size.height),
-                                1f,
-                                pathEffect = pathEffect
-                            )
-                            drawContent()
-                        }
-                    }
+    LazyColumn(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(16.dp)
+    ) {
+        item {
+            Box(
+                modifier = Modifier.height(300.dp)
             ) {
-                Row(modifier = Modifier.padding(start = 34.dp)) {
-                    Column() {
-                        Text(
-                            text = "Availability",
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 17.sp
-                        )
-                        Text(
-                            text = "When are you available to study? " +
-                                "You're free to pick more than one (1) option.",
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        TopSection(Modifier.weight(1f), uiState.items) { item ->
-                            gridViewModel.onEvent(UIEvent.OnGridItemSelected(item))
+                val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                Column(
+                    modifier = Modifier
+                        .padding(start = 34.dp)
+                        .drawWithCache {
+                            onDrawWithContent {
+                                // draw behind the content the vertical line on the left
+                                drawLine(
+                                    color = buttonColor,
+                                    Offset.Zero,
+                                    Offset(0f, this.size.height),
+                                    1f,
+                                    pathEffect = pathEffect
+                                )
+                                drawContent()
+                            }
                         }
-                        MiddleSection(moreIconState = uiState.items.size > 6, modifier = Modifier) {
-                            gridViewModel.onEvent(UIEvent.OnMoreIconPressed)
+                ) {
+                    Row(modifier = Modifier.padding(start = 34.dp)) {
+                        Column() {
+                            Text(
+                                text = "Availability",
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 17.sp
+                            )
+                            Text(
+                                text = "When are you available to study? " +
+                                    "You're free to pick more than one (1) option.",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            TopSection(Modifier.weight(1f), uiState.items) { item ->
+                                gridViewModel.onEvent(UIEvent.OnGridItemSelected(item))
+                            }
+                            MiddleSection(
+                                moreIconState = uiState.items.size > 6,
+                                modifier = Modifier
+                            ) {
+                                gridViewModel.onEvent(UIEvent.OnMoreIconPressed)
+                            }
                         }
                     }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .border(2.dp, buttonColor, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = activeCardColor)
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(2.dp, buttonColor, CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "1", color = buttonColor)
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier.size(50.dp),
+                        shape = CircleShape,
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = activeCardColor)
+                    ) {
+                        Text(text = "1", color = buttonColor)
+                    }
                 }
             }
         }
-        ButtonView()
-        Column() {
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .border(2.dp, buttonColor, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = activeCardColor)
+
+        item {
+            ButtonView()
+            Column() {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(2.dp, buttonColor, CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "2", color = buttonColor)
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier.size(50.dp),
+                        shape = CircleShape,
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = activeCardColor)
+                    ) {
+                        Text(text = "2", color = buttonColor)
+                    }
                 }
-            }
-            EndSection() {
-                gridViewModel.onEvent(UIEvent.OnSubmitPressed)
+                EndSection() {
+                    gridViewModel.onEvent(UIEvent.OnSubmitPressed)
+                }
             }
         }
     }
@@ -372,7 +391,7 @@ fun GridView(
     onItemSelected: (GridProps) -> Unit
 ) {
     LazyVerticalGrid(
-        // on below line we are setting the
+        modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(2)
     ) {
         items(items, key = { item -> item.id }) {
